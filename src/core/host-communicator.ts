@@ -6,10 +6,15 @@ import { sleep } from '../utils/helpers'
 import { MessageCommunicator } from './message-communicator'
 
 export class HostCommunicator<P extends MessagePayload> extends MessageCommunicator<P> {
+  private static instance: HostCommunicator<MessagePayload> | null = null
   private isReady = false
 
-  constructor() {
+  private constructor() {
     super()
+  }
+
+  static getInstance<P extends MessagePayload>(): HostCommunicator<P> {
+    return (HostCommunicator.instance ??= new HostCommunicator<P>())
   }
 
   private async waitForConnection(destination: Destination): Promise<void> {

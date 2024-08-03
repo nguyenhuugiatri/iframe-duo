@@ -31,7 +31,7 @@ type MessagePayload =
   | { key: 'greet', payload: { message: string } }
   | { key: 'requestData', payload: { requestId: number } }
 
-const host = new HostCommunicator<MessagePayload>()
+const host = HostCommunicator.getInstance<MessagePayload>()
 const iframe = document.querySelector('iframe')
 
 host.connect({
@@ -72,14 +72,14 @@ type MessagePayload =
   | { key: 'greet', payload: { message: string } }
   | { key: 'requestData', payload: { requestId: number } }
 
-const iframe = new TargetCommunicator<MessagePayload>()
+const target = TargetCommunicator.getInstance<MessagePayload>()
 
-iframe.on('greet', (message, reply) => {
+target.on('greet', (message, reply) => {
   console.log('Host said:', message.payload.message)
   reply.accept({ message: 'I\'m fine, how about you?' })
 })
 
-const response = await iframe.send({
+const response = await target.send({
   key: 'requestData',
   payload: { requestId: 1 }
 })

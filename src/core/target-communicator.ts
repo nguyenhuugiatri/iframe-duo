@@ -4,8 +4,14 @@ import { isValidMessage } from '../utils/helpers'
 import { MessageCommunicator } from './message-communicator'
 
 export class TargetCommunicator<P extends MessagePayload> extends MessageCommunicator<P> {
-  constructor() {
+  private static instance: TargetCommunicator<MessagePayload> | null = null
+
+  private constructor() {
     super()
+  }
+
+  static getInstance<P extends MessagePayload>(): TargetCommunicator<P> {
+    return (TargetCommunicator.instance ??= new TargetCommunicator<P>())
   }
 
   protected override handleMessage(event: MessageEvent): void {
