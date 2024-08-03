@@ -1,1 +1,2 @@
 export const PING_PONG_INTERVAL_MS = 150
+export const MAX_PING_PONG_ATTEMPTS = 20
