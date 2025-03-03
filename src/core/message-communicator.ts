@@ -7,8 +7,8 @@ import type {
   MessageWithOptionalId,
 } from '../types'
 import { EventEmitter2 } from 'eventemitter2'
-import { Deferred } from '../../defer'
 import { MessageMethod, MessageType } from '../types'
+import { Deferred } from '../utils/defer'
 import { generateMessageId, isValidMessage } from '../utils/helpers'
 
 export abstract class MessageCommunicator<P extends MessagePayload> {

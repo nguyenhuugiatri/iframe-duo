@@ -1,6 +1,7 @@
 import commonjs from '@rollup/plugin-commonjs'
 import json from '@rollup/plugin-json'
 import { nodeResolve } from '@rollup/plugin-node-resolve'
+import terser from '@rollup/plugin-terser'
 import { defineConfig } from 'rollup'
 import generatePackageJson from 'rollup-plugin-generate-package-json'
 import typescript from 'rollup-plugin-typescript2'
@@ -15,11 +16,15 @@ export default defineConfig({
       dir: commonjsOutDir,
       format: 'commonjs',
       sourcemap: true,
+      preserveModules: true,
+      preserveModulesRoot: 'src',
     },
     {
       dir: moduleOutDir,
       format: 'module',
       sourcemap: true,
+      preserveModules: true,
+      preserveModulesRoot: 'src',
     },
   ],
   plugins: [
@@ -42,5 +47,6 @@ export default defineConfig({
         type: 'module',
       }),
     }),
+    terser(),
   ],
 })
