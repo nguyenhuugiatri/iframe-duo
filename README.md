@@ -1,1 +1,1 @@
-# TypeScript library template
+# LEM'S UTILITIES
