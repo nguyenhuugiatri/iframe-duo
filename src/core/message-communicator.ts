@@ -66,16 +66,15 @@ export abstract class MessageCommunicator<P extends MessagePayload> {
 
     const normalizedMessage: Message<P> = { ...message, id }
 
-    if (destination instanceof MessagePort) {
-      destination.postMessage(normalizedMessage, { transfer })
+    if (destination instanceof MessagePort || destination instanceof Worker) {
+      destination.postMessage(normalizedMessage, transfer || [])
     }
     else {
       const { target, targetOrigin } = destination
+      if (!targetOrigin)
+        throw new Error('targetOrigin is required for Window or Iframe')
       if (target instanceof HTMLIFrameElement) {
         target.contentWindow?.postMessage(normalizedMessage, targetOrigin, transfer)
-      }
-      else if (target instanceof Worker) {
-        target.postMessage(normalizedMessage, transfer || [])
       }
       else if (target instanceof Window) {
         target.postMessage(normalizedMessage, targetOrigin, transfer)

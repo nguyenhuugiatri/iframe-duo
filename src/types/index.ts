@@ -36,4 +36,4 @@ K extends '*'
 
 export type Destination =
   | MessagePort
-  | { target: HTMLIFrameElement | Window | Worker, targetOrigin: string }
+  | { target: HTMLIFrameElement | Window | Worker, targetOrigin?: string }

@@ -1,6 +1,10 @@
 import type { Message } from '../types'
 import { nanoid } from 'nanoid'
 
+export type ConnectOptions<T extends HTMLIFrameElement | Window | Worker> = T extends Worker ?
+    { target: T }
+  : { target: T, targetOrigin: string }
+
 export const generateMessageId = (): string => nanoid()
 
 export function sleep(ms: number): Promise<void> {

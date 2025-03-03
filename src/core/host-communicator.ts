@@ -1,4 +1,5 @@
 import type { Destination, MessagePayload } from '../types'
+import type { ConnectOptions } from '../utils/helpers'
 import { MessageMethod, MessageType } from '../types'
 import { PING_PONG_INTERVAL_MS } from '../utils/constants'
 import { sleep } from '../utils/helpers'
@@ -30,7 +31,10 @@ export class HostCommunicator<P extends MessagePayload> extends MessageCommunica
     }
   }
 
-  connect(destination: Destination): void {
+  connect<T extends HTMLIFrameElement | Window | Worker>(options: ConnectOptions<T>): void {
+    const { target } = options
+    const targetOrigin = 'targetOrigin' in options ? options.targetOrigin : undefined
+
     const channel = new MessageChannel()
     this.messagePort = channel.port1
     this.messagePort.onmessage = this.handleMessage.bind(this)
@@ -39,10 +43,14 @@ export class HostCommunicator<P extends MessagePayload> extends MessageCommunica
       type: MessageType.Request,
       method: MessageMethod.Connect,
     }
-    const transfer = [channel.port2]
+
+    const destination = {
+      target,
+      targetOrigin,
+    }
 
     void this.waitForConnection(destination).then(() =>
-      this.postMessage(connectMessage, destination, transfer),
+      this.postMessage(connectMessage, destination, [channel.port2]),
     )
   }
 }
