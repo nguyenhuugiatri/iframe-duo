@@ -3,29 +3,28 @@ type Rejector = (reason?: unknown) => void
 
 export class Deferred<T = void> {
   readonly promise: Promise<T>
-  private _state: 'pending' | 'fulfilled' | 'rejected' = 'pending'
-
-  private _resolve!: Resolver<T>
-  private _reject!: Rejector
+  private state: 'pending' | 'fulfilled' | 'rejected' = 'pending'
+  private resolveFn!: Resolver<T>
+  private rejectFn!: Rejector
 
   constructor() {
     this.promise = new Promise<T>((resolve, reject) => {
-      this._resolve = resolve as Resolver<T>
-      this._reject = reject
+      this.resolveFn = resolve as Resolver<T>
+      this.rejectFn = reject
     })
   }
 
-  resolve(value?: T | PromiseLike<T>) {
-    if (this._state === 'pending') {
-      this._state = 'fulfilled'
-      this._resolve(value)
+  resolve(value?: T | PromiseLike<T>): void {
+    if (this.state === 'pending') {
+      this.state = 'fulfilled'
+      this.resolveFn(value)
     }
   }
 
-  reject(reason?: unknown) {
-    if (this._state === 'pending') {
-      this._state = 'rejected'
-      this._reject(reason)
+  reject(reason?: unknown): void {
+    if (this.state === 'pending') {
+      this.state = 'rejected'
+      this.rejectFn(reason)
     }
   }
 }
