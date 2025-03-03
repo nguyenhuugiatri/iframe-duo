@@ -66,15 +66,20 @@ export abstract class MessageCommunicator<P extends MessagePayload> {
 
     const normalizedMessage: Message<P> = { ...message, id }
 
-    if ('postMessage' in destination) {
+    if (destination instanceof MessagePort) {
       destination.postMessage(normalizedMessage, { transfer })
     }
     else {
-      destination.target.contentWindow?.postMessage(
-        normalizedMessage,
-        destination.targetOrigin,
-        transfer,
-      )
+      const { target, targetOrigin } = destination
+      if (target instanceof HTMLIFrameElement) {
+        target.contentWindow?.postMessage(normalizedMessage, targetOrigin, transfer)
+      }
+      else if (target instanceof Worker) {
+        target.postMessage(normalizedMessage, transfer || [])
+      }
+      else if (target instanceof Window) {
+        target.postMessage(normalizedMessage, targetOrigin, transfer)
+      }
     }
 
     return deferred.promise

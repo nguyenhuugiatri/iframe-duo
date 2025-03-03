@@ -1,4 +1,4 @@
-import type { MessagePayload } from '../types'
+import type { Destination, MessagePayload } from '../types'
 import { MessageMethod, MessageType } from '../types'
 import { PING_PONG_INTERVAL_MS } from '../utils/constants'
 import { sleep } from '../utils/helpers'
@@ -11,7 +11,7 @@ export class HostCommunicator<P extends MessagePayload> extends MessageCommunica
     super()
   }
 
-  private async waitForConnection(target: HTMLIFrameElement, targetOrigin: string): Promise<void> {
+  private async waitForConnection(destination: Destination): Promise<void> {
     if (this.isReady)
       return
 
@@ -19,7 +19,6 @@ export class HostCommunicator<P extends MessagePayload> extends MessageCommunica
       type: MessageType.Request,
       method: MessageMethod.Ping,
     }
-    const destination = { target, targetOrigin }
 
     while (!this.isReady) {
       this.postMessage(pingMessage, destination)
@@ -31,10 +30,7 @@ export class HostCommunicator<P extends MessagePayload> extends MessageCommunica
     }
   }
 
-  connect(target: HTMLIFrameElement, targetOrigin: string): void {
-    if (this.messagePort)
-      throw new Error('Already connected. Call cleanup() before reconnecting.')
-
+  connect(destination: Destination): void {
     const channel = new MessageChannel()
     this.messagePort = channel.port1
     this.messagePort.onmessage = this.handleMessage.bind(this)
@@ -43,10 +39,9 @@ export class HostCommunicator<P extends MessagePayload> extends MessageCommunica
       type: MessageType.Request,
       method: MessageMethod.Connect,
     }
-    const destination = { target, targetOrigin }
     const transfer = [channel.port2]
 
-    void this.waitForConnection(target, targetOrigin).then(() =>
+    void this.waitForConnection(destination).then(() =>
       this.postMessage(connectMessage, destination, transfer),
     )
   }

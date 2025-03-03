@@ -1,21 +1,21 @@
-# iframe-duo
+# cross-communicator
 
-**iframe-duo** is a lightweight TypeScript library for bi-directional communication between a host page and an iframe using `MessagePort`. It simplifies cross-frame messaging with a type-safe API, ideal for seamless interaction between host and iframe environments.
+**cross-communicator** is a lightweight, TypeScript-based library designed for seamless bi-directional communication between a window and another window, iframe, or worker using `MessagePort`. It provides a type-safe, promise-based API for sending and receiving messages, making cross-frame interactions simple and reliable.
 
 ## Features
 
-- **Bi-directional Communication**: Send & receive messages effortlessly.
-- **TypeScript Support**: Fully typed API.
-- **Lightweight**: Minimal dependencies.
-- **Promise-based**: Handle responses asynchronously.
-- **Event-driven**: Subscribe to messages via event listeners.
+- **Bi-directional Messaging**: Easily send and receive messages between host and iframe.
+- **TypeScript Support**: Fully typed for a robust development experience.
+- **Lightweight**: Minimal dependencies, optimized for performance.
+- **Promise-Based Responses**: Handle asynchronous replies with ease.
+- **Event-Driven**: Subscribe to specific message types using event listeners.
 
 ## Installation
 
-Install via npm or pnpm:
+Install the package using npm:
 
 ```sh
-npm install iframe-duo
+npm install cross-communicator
 ```
 
 ## Usage
@@ -25,7 +25,7 @@ npm install iframe-duo
 Create a `HostCommunicator` to connect with an iframe and exchange messages.
 
 ```typescript
-import { HostCommunicator } from 'iframe-duo'
+import { HostCommunicator } from 'cross-communicator'
 
 type MessagePayload =
   | { key: 'greet', payload: { message: string } }
@@ -38,7 +38,7 @@ host.connect(iframe, 'http://localhost:3000')
 
 const response = await host.send({
   key: 'greet',
-  payload: { message: 'Hello iframe, how are you?' }
+  payload: { message: 'Hello iframe, how are you?' },
 })
 
 host.on('requestData', (message, reply) => {
@@ -54,16 +54,16 @@ host.on('requestData', (message, reply) => {
 
 ### Iframe Example
 
-Use `IframeCommunicator` inside the iframe to respond to host messages and send messages back.
+Use `TargetCommunicator` inside the iframe to respond to host messages and send messages back.
 
 ```typescript
-import { IframeCommunicator } from 'iframe-duo'
+import { TargetCommunicator } from 'cross-communicator'
 
 type MessagePayload =
   | { key: 'greet', payload: { message: string } }
   | { key: 'requestData', payload: { requestId: number } }
 
-const iframe = new IframeCommunicator<MessagePayload>()
+const iframe = new TargetCommunicator<MessagePayload>()
 
 iframe.on('greet', (message, reply) => {
   console.log('Host said:', message.payload.message)
@@ -74,24 +74,24 @@ const response = await iframe.send({
   key: 'requestData',
   payload: { requestId: 1 }
 })
-console.log('Received data from host:', response)
 ```
 
 ## API
 
 ### HostCommunicator
 
-- `connect(target: HTMLIFrameElement, targetOrigin: string)`: Connects to an iframe.
+- `connect(destination: MessagePort
+  | { target: HTMLIFrameElement | Window | Worker, targetOrigin: string })`: Connects to an window/worker/iframe.
 - `send(payload: T): Promise<any>`: Sends a message and returns a response.
 - `on(event: T['key'] | '*', handler: EventHandler<T>)`: Registers an event listener.
 - `off(event: T['key'] | '*', handler: EventHandler<T>)`: Removes a listener.
 - `removeAllListeners()`: Clears all listeners.
 - `destroy()`: Cleans up resources.
 
-### IframeCommunicator
+### TargetCommunicator
 
 Extends `HostCommunicator` and automatically handles incoming connections from the host.
 
 ---
 
-iframe-duo simplifies cross-frame messaging with a clean, type-safe API. 🚀
+cross-communicator simplifies cross-frame messaging with a clean, type-safe API. 🚀

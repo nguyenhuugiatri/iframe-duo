@@ -3,9 +3,7 @@ import { MessageMethod, MessageType } from '../types'
 import { isValidMessage } from '../utils/helpers'
 import { MessageCommunicator } from './message-communicator'
 
-export class IframeCommunicator<
-  P extends MessagePayload,
-> extends MessageCommunicator<P> {
+export class TargetCommunicator<P extends MessagePayload> extends MessageCommunicator<P> {
   constructor() {
     super()
   }
@@ -31,12 +29,12 @@ export class IframeCommunicator<
         if (event.ports[0] && !this.messagePort) {
           this.messagePort = event.ports[0]
           this.messagePort.onmessage = this.handleMessage.bind(this)
-          const acceptConnectMessage = {
+          const acceptMessage = {
             id,
             type: MessageType.Accept,
             method: MessageMethod.Connect,
           }
-          this.postMessage(acceptConnectMessage, this.messagePort)
+          this.postMessage(acceptMessage, this.messagePort)
         }
         return
       }

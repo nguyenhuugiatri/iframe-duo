@@ -1,27 +1,29 @@
 {
-  "name": "iframe-duo",
+  "name": "cross-communicator",
   "type": "module",
   "version": "0.0.1",
   "packageManager": "pnpm@9.5.0",
-  "description": "A lightweight library for bi-directional iframe communication",
+  "description": "Seamless bi-directional communication between a window and another window, iframe, or worker using MessagePort.",
   "author": "nguyenhuugiatri <nguyenhuugiatri@gmail.com>",
   "license": "MIT",
-  "homepage": "https://github.com/nguyenhuugiatri/iframe-duo#readme",
+  "homepage": "https://github.com/nguyenhuugiatri/cross-communicator#readme",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/nguyenhuugiatri/iframe-duo.git"
+    "url": "git+https://github.com/nguyenhuugiatri/cross-communicator.git"
   },
   "keywords": [
     "iframe",
-    "communication",
-    "postMessage",
+    "worker",
+    "window",
+    "cross-iframe",
     "bi-directional",
-    "communication",
     "message-port",
+    "message-channel",
+    "postmessage",
     "typescript",
-    "host-iframe",
-    "cross-frame",
-    "web-messaging"
+    "web-messaging",
+    "communication",
+    "cross-communication"
   ],
   "exports": {
     ".": {
