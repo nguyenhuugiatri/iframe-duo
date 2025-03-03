@@ -1,5 +1,3 @@
-import { EventEmitter2 } from 'eventemitter2'
-import { Deferred } from '../../defer'
 import type {
   Destination,
   EventHandler,
@@ -8,6 +6,8 @@ import type {
   MessageReply,
   MessageWithOptionalId,
 } from '../types'
+import { EventEmitter2 } from 'eventemitter2'
+import { Deferred } from '../../defer'
 import { MessageMethod, MessageType } from '../types'
 import { generateMessageId, isValidMessage } from '../utils/helpers'
 
@@ -108,7 +108,7 @@ export abstract class MessageCommunicator<P extends MessagePayload> {
     }
   }
 
-  send<R>(message: P): Promise<R> {
+  send<R = any>(message: P): Promise<R> {
     if (!this.messagePort)
       throw new Error('Connection not established')
     return this.postMessage(

@@ -32,6 +32,9 @@ export class HostCommunicator<P extends MessagePayload> extends MessageCommunica
   }
 
   connect(target: HTMLIFrameElement, targetOrigin: string): void {
+    if (this.messagePort)
+      throw new Error('Already connected. Call cleanup() before reconnecting.')
+
     const channel = new MessageChannel()
     this.messagePort = channel.port1
     this.messagePort.onmessage = this.handleMessage.bind(this)

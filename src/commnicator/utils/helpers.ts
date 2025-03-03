@@ -1,5 +1,5 @@
-import { nanoid } from 'nanoid'
 import type { Message } from '../types'
+import { nanoid } from 'nanoid'
 
 export const generateMessageId = (): string => nanoid()
 

@@ -1,15 +1,15 @@
-import { defineConfig } from 'rollup'
-import { nodeResolve } from '@rollup/plugin-node-resolve'
 import commonjs from '@rollup/plugin-commonjs'
-import typescript from 'rollup-plugin-typescript2'
 import json from '@rollup/plugin-json'
+import { nodeResolve } from '@rollup/plugin-node-resolve'
+import { defineConfig } from 'rollup'
 import generatePackageJson from 'rollup-plugin-generate-package-json'
+import typescript from 'rollup-plugin-typescript2'
 
 const commonjsOutDir = 'dist/commonjs'
 const moduleOutDir = 'dist/module'
 
 export default defineConfig({
-  input: `index.ts`,
+  input: `src/index.ts`,
   output: [
     {
       dir: commonjsOutDir,
