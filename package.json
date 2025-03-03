@@ -1,16 +1,28 @@
 {
-  "name": "@axieinfinity/iframe-communicator",
+  "name": "iframe-duo",
   "type": "module",
-  "version": "0.0.5",
+  "version": "0.0.1",
   "packageManager": "pnpm@9.5.0",
-  "description": "Typescript library template",
+  "description": "A lightweight library for bi-directional iframe communication",
   "author": "nguyenhuugiatri <nguyenhuugiatri@gmail.com>",
   "license": "MIT",
+  "homepage": "https://github.com/nguyenhuugiatri/iframe-duo#readme",
   "repository": {
     "type": "git",
-    "url": ""
+    "url": "https://github.com/nguyenhuugiatri/iframe-duo"
   },
-  "keywords": [],
+  "keywords": [
+    "iframe",
+    "communication",
+    "postMessage",
+    "bi-directional",
+    "communication",
+    "message-port",
+    "typescript",
+    "host-iframe",
+    "cross-frame",
+    "web-messaging"
+  ],
   "exports": {
     ".": {
       "types": "./dist/types/index.d.ts",
@@ -58,9 +70,7 @@
     "vitest": "3.0.7"
   },
   "commitlint": {
-    "extends": [
-      "@commitlint/config-conventional"
-    ]
+    "extends": ["@commitlint/config-conventional"]
   },
   "simple-git-hooks": {
     "commit-msg": "pnpm commitlint --edit ${1}",
