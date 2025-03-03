@@ -9,7 +9,7 @@ const commonjsOutDir = 'dist/commonjs'
 const moduleOutDir = 'dist/module'
 
 export default defineConfig({
-  input: `src/index.ts`,
+  input: `index.ts`,
   output: [
     {
       dir: commonjsOutDir,

@@ -1,7 +1,7 @@
 {
-  "name": "typescript-library-template",
+  "name": "@axieinfinity/iframe-communicator",
   "type": "module",
-  "version": "0.0.0",
+  "version": "0.0.5",
   "packageManager": "pnpm@9.5.0",
   "description": "Typescript library template",
   "author": "nguyenhuugiatri <nguyenhuugiatri@gmail.com>",

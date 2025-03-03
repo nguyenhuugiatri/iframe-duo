@@ -90,9 +90,13 @@ export abstract class MessageCommunicator {
     this.eventEmitter.off(eventType, handler)
   }
 
+  removeAllListeners(): void {
+    this.eventEmitter.removeAllListeners()
+  }
+
   destroy(): void {
     window.removeEventListener('message', this.boundHandleMessage)
-    this.eventEmitter.removeAllListeners()
+    this.removeAllListeners()
     this.pendingMessages.clear()
     this.messagePort?.close()
     this.messagePort = undefined
