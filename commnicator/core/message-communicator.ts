@@ -84,6 +84,8 @@ export abstract class MessageCommunicator<P extends MessagePayload> {
     if (!this.messagePort)
       throw new Error('Connection not established')
 
+    const port = this.messagePort
+
     return {
       accept: response =>
         this.postMessage(
@@ -92,7 +94,7 @@ export abstract class MessageCommunicator<P extends MessagePayload> {
             type: MessageType.Accept,
             payload: response,
           },
-          this.messagePort!,
+          port,
         ),
       decline: reason =>
         this.postMessage(
@@ -101,7 +103,7 @@ export abstract class MessageCommunicator<P extends MessagePayload> {
             type: MessageType.Decline,
             payload: reason,
           },
-          this.messagePort!,
+          port,
         ),
     }
   }
