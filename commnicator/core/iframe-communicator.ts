@@ -6,14 +6,8 @@ import { MessageCommunicator } from './message-communicator'
 export class IframeCommunicator<
   P extends MessagePayload,
 > extends MessageCommunicator<P> {
-  private static instance: IframeCommunicator<MessagePayload> | null = null
-
-  private constructor() {
+  constructor() {
     super()
-  }
-
-  static getInstance<U extends MessagePayload>(): IframeCommunicator<U> {
-    return (IframeCommunicator.instance ??= new IframeCommunicator<U>())
   }
 
   protected override handleMessage(event: MessageEvent): void {

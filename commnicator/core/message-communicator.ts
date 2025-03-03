@@ -133,7 +133,7 @@ export abstract class MessageCommunicator<P extends MessagePayload> {
     this.eventEmitter.removeAllListeners()
   }
 
-  destroy(): void {
+  cleanup(): void {
     if (typeof window !== 'undefined') {
       window.removeEventListener('message', this.boundHandleMessage)
     }

@@ -5,15 +5,10 @@ import { sleep } from '../utils/helpers'
 import { MessageCommunicator } from './message-communicator'
 
 export class HostCommunicator<P extends MessagePayload> extends MessageCommunicator<P> {
-  private static instance: HostCommunicator<MessagePayload> | null = null
   private isReady = false
 
-  private constructor() {
+  constructor() {
     super()
-  }
-
-  static getInstance<P extends MessagePayload>(): HostCommunicator<P> {
-    return (HostCommunicator.instance ??= new HostCommunicator<P>())
   }
 
   private async waitForConnection(target: HTMLIFrameElement, targetOrigin: string): Promise<void> {
@@ -51,10 +46,5 @@ export class HostCommunicator<P extends MessagePayload> extends MessageCommunica
     void this.waitForConnection(target, targetOrigin).then(() =>
       this.postMessage(connectMessage, destination, transfer),
     )
-  }
-
-  override destroy(): void {
-    super.destroy()
-    this.isReady = false
   }
 }
