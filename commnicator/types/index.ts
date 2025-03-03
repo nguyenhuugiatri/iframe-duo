@@ -1,35 +1,39 @@
-export interface MessagePrototype {
+export interface MessagePayload {
   eventName: string
   [key: string]: any
 }
 
-export enum InternalMessageMethod {
+export enum MessageMethod {
   Ping = 'ping',
   Connect = 'connect',
   Execute = 'execute',
 }
 
-export enum InternalMessageType {
+export enum MessageType {
   Request = 'request',
   Accept = 'accept',
   Decline = 'decline',
 }
 
-export interface InternalMessage<T = any> {
+export interface Message<T = any> {
   id: string
-  type: InternalMessageType
-  method: InternalMessageMethod
+  type: MessageType
+  method: MessageMethod
   payload?: T
 }
 
-export type InternalMessageOptionalId<T> = Omit<InternalMessage<T>, 'id'> & {
-  id?: string
-}
-export interface ReplyHandler {
+export type MessageWithOptionalId<T> = Omit<Message<T>, 'id'> & { id?: string }
+
+export interface MessageReply {
   accept: (response: any) => void
   decline: (reason: any) => void
 }
 
-export type MessageDestination =
+export type EventHandler<T extends MessagePayload, N extends T['eventName'] | '*'> =
+N extends '*'
+  ? (message: T, reply: MessageReply) => void
+  : (message: Extract<T, { eventName: N }>, reply: MessageReply) => void
+
+export type Destination =
   | MessagePort
   | { target: HTMLIFrameElement, targetOrigin: string }

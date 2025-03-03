@@ -1,22 +1,17 @@
 import { EventEmitter2 } from 'eventemitter2'
 import { Deferred } from '../../defer'
 import type {
-  InternalMessage,
-  InternalMessageOptionalId,
-  MessageDestination,
-  MessagePrototype,
-  ReplyHandler,
+  Destination,
+  EventHandler,
+  Message,
+  MessagePayload,
+  MessageReply,
+  MessageWithOptionalId,
 } from '../types'
-import {
-  InternalMessageMethod,
-  InternalMessageType,
-} from '../types'
-import {
-  generateMessageId,
-  isValidMessage,
-} from '../utils/helpers'
+import { MessageMethod, MessageType } from '../types'
+import { generateMessageId, isValidMessage } from '../utils/helpers'
 
-export abstract class MessageCommunicator<T extends MessagePrototype> {
+export abstract class MessageCommunicator<P extends MessagePayload> {
   protected pendingMessages = new Map<string, Deferred<any>>()
   protected eventEmitter = new EventEmitter2({ wildcard: true })
   protected messagePort?: MessagePort
@@ -34,16 +29,16 @@ export abstract class MessageCommunicator<T extends MessagePrototype> {
     this.processMessage(event.data)
   }
 
-  protected processMessage(message: InternalMessage<T>): void {
+  protected processMessage(message: Message<P>): void {
     const { id, type, payload } = message
     const deferred = this.pendingMessages.get(id)
 
     if (deferred) {
       switch (type) {
-        case InternalMessageType.Accept:
+        case MessageType.Accept:
           deferred.resolve(payload)
           break
-        case InternalMessageType.Decline:
+        case MessageType.Decline:
           deferred.reject(payload)
           break
       }
@@ -51,7 +46,7 @@ export abstract class MessageCommunicator<T extends MessagePrototype> {
       return
     }
 
-    if (type === InternalMessageType.Request && payload) {
+    if (type === MessageType.Request && payload) {
       this.eventEmitter.emit(
         payload.eventName,
         payload,
@@ -61,14 +56,14 @@ export abstract class MessageCommunicator<T extends MessagePrototype> {
   }
 
   protected sendInternalMessage<R>(
-    message: InternalMessageOptionalId<T>,
-    destination: MessageDestination,
+    message: MessageWithOptionalId<P>,
+    destination: Destination,
   ): Promise<R> {
     const id = message.id ?? generateMessageId()
     const deferred = new Deferred<R>()
     this.pendingMessages.set(id, deferred)
 
-    const normalizedMessage: InternalMessage<T> = { ...message, id }
+    const normalizedMessage: Message<P> = { ...message, id }
 
     if ('postMessage' in destination) {
       destination.postMessage(normalizedMessage)
@@ -83,52 +78,50 @@ export abstract class MessageCommunicator<T extends MessagePrototype> {
     return deferred.promise
   }
 
-  protected createReplyHandler(message: InternalMessage<T>): ReplyHandler {
+  protected createReplyHandler(message: Message<P>): MessageReply {
     if (!this.messagePort)
       throw new Error('Connection not established')
 
     return {
       accept: response =>
         this.sendInternalMessage(
-          { ...message, type: InternalMessageType.Accept, payload: response },
+          {
+            ...message,
+            type: MessageType.Accept,
+            payload: response,
+          },
           this.messagePort!,
         ),
       decline: reason =>
         this.sendInternalMessage(
-          { ...message, type: InternalMessageType.Decline, payload: reason },
+          {
+            ...message,
+            type: MessageType.Decline,
+            payload: reason,
+          },
           this.messagePort!,
         ),
     }
   }
 
-  send<R>(message: T): Promise<R> {
+  send<R>(message: P): Promise<R> {
     if (!this.messagePort)
       throw new Error('Connection not established')
     return this.sendInternalMessage(
       {
-        method: InternalMessageMethod.Execute,
-        type: InternalMessageType.Request,
+        method: MessageMethod.Execute,
+        type: MessageType.Request,
         payload: message,
       },
       this.messagePort,
     )
   }
 
-  on<N extends T['eventName'] | '*'>(
-    eventName: N,
-    handler: N extends T['eventName']
-      ? (message: Extract<T, { eventName: N }>, reply: ReplyHandler) => void
-      : (message: T, reply: ReplyHandler) => void,
-  ): void {
+  on<N extends P['eventName'] | '*'>(eventName: N, handler: EventHandler<P, N>): void {
     this.eventEmitter.on(eventName, handler)
   }
 
-  off<N extends T['eventName'] | '*'>(
-    eventName: N,
-    handler: N extends T['eventName']
-      ? (message: Extract<T, { eventName: N }>, reply: ReplyHandler) => void
-      : (message: T, reply: ReplyHandler) => void,
-  ): void {
+  off<N extends P['eventName'] | '*'>(eventName: N, handler: EventHandler<P, N>): void {
     this.eventEmitter.off(eventName, handler)
   }
 

@@ -1,18 +1,16 @@
-import type { MessagePrototype } from '../types'
-import { InternalMessageMethod, InternalMessageType } from '../types'
+import type { MessagePayload } from '../types'
+import { MessageMethod, MessageType } from '../types'
 import { isValidMessage } from '../utils/helpers'
 import { MessageCommunicator } from './message-communicator'
 
-export class IframeCommunicator<
-  T extends MessagePrototype,
-> extends MessageCommunicator<T> {
-  private static instance: IframeCommunicator<any>
+export class IframeCommunicator<P extends MessagePayload> extends MessageCommunicator<P> {
+  private static instance: IframeCommunicator<MessagePayload> | null = null
 
   private constructor() {
     super()
   }
 
-  static getInstance<U extends MessagePrototype>(): IframeCommunicator<U> {
+  static getInstance<U extends MessagePayload>(): IframeCommunicator<U> {
     return (IframeCommunicator.instance ??= new IframeCommunicator<U>())
   }
 
@@ -20,25 +18,28 @@ export class IframeCommunicator<
     if (!isValidMessage(event.data))
       return
 
-    switch (event.data.method) {
-      case InternalMessageMethod.Ping:
+    const { method, id } = event.data
+
+    switch (method) {
+      case MessageMethod.Ping:
         event.source?.postMessage(
           {
-            id: event.data.id,
-            type: InternalMessageType.Accept,
-            method: InternalMessageMethod.Ping,
+            id,
+            type: MessageType.Accept,
+            method: MessageMethod.Ping,
           },
           { targetOrigin: event.origin },
         )
         return
-      case InternalMessageMethod.Connect:
+
+      case MessageMethod.Connect:
         if (event.ports[0] && !this.messagePort) {
           this.messagePort = event.ports[0]
           this.messagePort.onmessage = this.handleMessage.bind(this)
           this.messagePort.postMessage({
-            id: event.data.id,
-            type: InternalMessageType.Accept,
-            method: InternalMessageMethod.Connect,
+            id,
+            type: MessageType.Accept,
+            method: MessageMethod.Connect,
           })
         }
         return
