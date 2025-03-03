@@ -1,5 +1,5 @@
 {
-  "name": "cross-communicator",
+  "name": "@sky-mavis/cross-communicator",
   "type": "module",
   "version": "0.0.3",
   "packageManager": "pnpm@9.5.0",

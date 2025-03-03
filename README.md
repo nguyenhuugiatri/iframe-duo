@@ -32,9 +32,12 @@ type MessagePayload =
   | { key: 'requestData', payload: { requestId: number } }
 
 const host = new HostCommunicator<MessagePayload>()
-const iframe = document.querySelector('iframe')!
+const iframe = document.querySelector('iframe')
 
-host.connect(iframe, 'http://localhost:3000')
+host.connect({
+  target: iframe,
+  targetOrigin: 'http://localhost:3000',
+})
 
 const response = await host.send({
   key: 'greet',
@@ -50,6 +53,12 @@ host.on('requestData', (message, reply) => {
     reply.decline(new Error('Data not found'))
   }
 })
+```
+
+Your html will be
+
+```html
+<iframe src="http://localhost:3000/<your_route>"/>
 ```
 
 ### Iframe Example
@@ -80,8 +89,7 @@ const response = await iframe.send({
 
 ### HostCommunicator
 
-- `connect(destination: MessagePort
-  | { target: HTMLIFrameElement | Window | Worker, targetOrigin: string })`: Connects to an window/worker/iframe.
+- `connect(ConnectOption: { target: Worker } | { target: HTMLIFrameElement | Window, targetOrigin: string })`: Connects to an window/worker/iframe.
 - `send(payload: T): Promise<any>`: Sends a message and returns a response.
 - `on(event: T['key'] | '*', handler: EventHandler<T>)`: Registers an event listener.
 - `off(event: T['key'] | '*', handler: EventHandler<T>)`: Removes a listener.
