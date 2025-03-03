@@ -1,7 +1,7 @@
 import type { MessagePayload } from '../types'
 import { MessageMethod, MessageType } from '../types'
 import { PING_PONG_INTERVAL_MS } from '../utils/constants'
-import { generateMessageId, sleep } from '../utils/helpers'
+import { sleep } from '../utils/helpers'
 import { MessageCommunicator } from './message-communicator'
 
 export class HostCommunicator<P extends MessagePayload> extends MessageCommunicator<P> {
@@ -27,7 +27,7 @@ export class HostCommunicator<P extends MessagePayload> extends MessageCommunica
     const destination = { target, targetOrigin }
 
     while (!this.isReady) {
-      this.sendInternalMessage(pingMessage, destination)
+      this.postMessage(pingMessage, destination)
         .then(() => {
           this.isReady = true
           this.pendingMessages.clear()
@@ -41,17 +41,16 @@ export class HostCommunicator<P extends MessagePayload> extends MessageCommunica
     this.messagePort = channel.port1
     this.messagePort.onmessage = this.handleMessage.bind(this)
 
-    this.waitForConnection(target, targetOrigin).then(() => {
-      target.contentWindow?.postMessage(
-        {
-          id: generateMessageId(),
-          type: MessageType.Request,
-          method: MessageMethod.Connect,
-        },
-        targetOrigin,
-        [channel.port2],
-      )
-    })
+    const connectMessage = {
+      type: MessageType.Request,
+      method: MessageMethod.Connect,
+    }
+    const destination = { target, targetOrigin }
+    const transfer = [channel.port2]
+
+    void this.waitForConnection(target, targetOrigin).then(() =>
+      this.postMessage(connectMessage, destination, transfer),
+    )
   }
 
   override destroy(): void {

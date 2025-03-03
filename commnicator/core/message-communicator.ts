@@ -55,9 +55,10 @@ export abstract class MessageCommunicator<P extends MessagePayload> {
     }
   }
 
-  protected sendInternalMessage<R>(
+  protected postMessage<R>(
     message: MessageWithOptionalId<P>,
     destination: Destination,
+    transfer?: Transferable[],
   ): Promise<R> {
     const id = message.id ?? generateMessageId()
     const deferred = new Deferred<R>()
@@ -66,12 +67,13 @@ export abstract class MessageCommunicator<P extends MessagePayload> {
     const normalizedMessage: Message<P> = { ...message, id }
 
     if ('postMessage' in destination) {
-      destination.postMessage(normalizedMessage)
+      destination.postMessage(normalizedMessage, { transfer })
     }
     else {
       destination.target.contentWindow?.postMessage(
         normalizedMessage,
         destination.targetOrigin,
+        transfer,
       )
     }
 
@@ -84,7 +86,7 @@ export abstract class MessageCommunicator<P extends MessagePayload> {
 
     return {
       accept: response =>
-        this.sendInternalMessage(
+        this.postMessage(
           {
             ...message,
             type: MessageType.Accept,
@@ -93,7 +95,7 @@ export abstract class MessageCommunicator<P extends MessagePayload> {
           this.messagePort!,
         ),
       decline: reason =>
-        this.sendInternalMessage(
+        this.postMessage(
           {
             ...message,
             type: MessageType.Decline,
@@ -107,7 +109,7 @@ export abstract class MessageCommunicator<P extends MessagePayload> {
   send<R>(message: P): Promise<R> {
     if (!this.messagePort)
       throw new Error('Connection not established')
-    return this.sendInternalMessage(
+    return this.postMessage(
       {
         method: MessageMethod.Execute,
         type: MessageType.Request,
