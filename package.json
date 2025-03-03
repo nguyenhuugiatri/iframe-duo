@@ -1,7 +1,7 @@
 {
   "name": "iframe-duo",
   "type": "module",
-  "version": "0.0.2",
+  "version": "0.0.1",
   "packageManager": "pnpm@9.5.0",
   "description": "A lightweight library for bi-directional iframe communication",
   "author": "nguyenhuugiatri <nguyenhuugiatri@gmail.com>",
@@ -9,7 +9,7 @@
   "homepage": "https://github.com/nguyenhuugiatri/iframe-duo#readme",
   "repository": {
     "type": "git",
-    "url": "https://github.com/nguyenhuugiatri/iframe-duo"
+    "url": "git+https://github.com/nguyenhuugiatri/iframe-duo.git"
   },
   "keywords": [
     "iframe",
@@ -70,7 +70,9 @@
     "vitest": "3.0.7"
   },
   "commitlint": {
-    "extends": ["@commitlint/config-conventional"]
+    "extends": [
+      "@commitlint/config-conventional"
+    ]
   },
   "simple-git-hooks": {
     "commit-msg": "pnpm commitlint --edit ${1}",
