@@ -48,7 +48,7 @@ export abstract class MessageCommunicator<P extends MessagePayload> {
 
     if (type === MessageType.Request && payload) {
       this.eventEmitter.emit(
-        payload.eventName,
+        payload.key,
         payload,
         this.createReplyHandler(message),
       )
@@ -121,12 +121,12 @@ export abstract class MessageCommunicator<P extends MessagePayload> {
     )
   }
 
-  on<N extends P['eventName'] | '*'>(eventName: N, handler: EventHandler<P, N>): void {
-    this.eventEmitter.on(eventName, handler)
+  on<K extends P['key'] | '*'>(key: K, handler: EventHandler<P, K>): void {
+    this.eventEmitter.on(key, handler)
   }
 
-  off<N extends P['eventName'] | '*'>(eventName: N, handler: EventHandler<P, N>): void {
-    this.eventEmitter.off(eventName, handler)
+  off<K extends P['key'] | '*'>(key: K, handler: EventHandler<P, K>): void {
+    this.eventEmitter.off(key, handler)
   }
 
   removeAllListeners(): void {
